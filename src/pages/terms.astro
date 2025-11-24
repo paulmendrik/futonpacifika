@@ -1,0 +1,24 @@
+---
+import Base from '@/layouts/Base.astro';
+import { PortableText } from 'astro-portabletext';
+import { sanityClient } from "sanity:client";
+const terms = await sanityClient.fetch(`*[_type == "terms"]`)
+
+---
+
+<Base title="Terms" header="Terms" >
+
+
+<div class="py-8  w-full">
+{terms.map((t: any) => (
+
+<div class="prose text-zinc-600 max-w-none">
+<PortableText  value={t.content} />
+</div>
+
+
+))}
+</div> 
+
+
+</Base>

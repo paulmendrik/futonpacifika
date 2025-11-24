@@ -1,0 +1,29 @@
+---
+import { Picture } from "astro:assets";
+import { urlFor } from "../../../sanity/image";
+import { sanityClient } from "sanity:client";
+import Main from "../../../layouts/Main.astro";
+const covers = await sanityClient.fetch(`*[_type == "covers"]`);
+---
+
+<Main title="Sheet Covers" header="Sheet Covers">
+<div class="w-full">
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-8 md:gap-4 gap-6 relative">
+{covers.map((cover:any) => (
+<a href={`/massage/covers/${cover.slug?.current}`} >
+<figure>
+<Picture class="max-w-full overflow-hidden" src={urlFor(cover.futon).format('webp').sharpen(80).url()} inferSize alt={cover.title} />
+<figcaption class="py-4" >
+<div class=" text-base uppercase text-red-600 text-center">
+{cover.title}
+</div>
+<div class="text-sm text-red-700">
+{cover.description}
+</div>
+</figcaption>
+</figure>
+</a>
+))}
+</div>
+</div>
+</Main>

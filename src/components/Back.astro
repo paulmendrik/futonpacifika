@@ -1,0 +1,12 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+
+<a id="back" class="absolute top-6 right-4 cursor-pointer"><Icon class="text-red-600" name="mdi:multiply" size={28} /></a>
+
+<script>
+document.getElementById("back").addEventListener("click", () => {
+    history.back();
+});
+</script>

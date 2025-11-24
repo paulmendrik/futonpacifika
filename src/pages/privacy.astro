@@ -1,0 +1,24 @@
+---
+import Base from '@/layouts/Base.astro';
+import { PortableText } from 'astro-portabletext';
+import { sanityClient } from "sanity:client";
+const privacy = await sanityClient.fetch(`*[_type == "privacy"]`)
+
+---
+
+<Base title="Privacy Policy" header="Privacy Policy" >
+
+
+<div class="privacy py-8  w-full">
+{privacy.map((p: any) => (
+
+<div class="prose  text-zinc-600 max-w-none">
+<PortableText  value={p.content} />
+</div>
+
+
+))}
+</div> 
+
+
+</Base>

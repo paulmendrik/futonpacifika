@@ -1,0 +1,28 @@
+---
+
+import { sanityClient } from 'sanity:client';
+import Category from "@/components/Category.astro";
+import Main from "@/layouts/Main.astro";
+
+const massage = await sanityClient.fetch(`*[_type == "massage"]{
+"categories": categories[] {
+    title,
+    image,
+    page
+  }
+}[0]`);
+---
+
+<Main title="Message Products" header="Message Products">
+
+<div class='gallery w-full'> 
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 lg:gap-8 md:gap-4 gap-6 relative">
+
+{massage.categories.map((category: any) => (
+
+<Category page={category.page} image={category.image} title={category.title} />
+
+))}
+</div>
+</div>  
+</Main>

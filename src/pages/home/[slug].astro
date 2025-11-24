@@ -1,0 +1,109 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import Back from '@/components/Back.astro';
+import Colors from "@/components/Colors.astro"
+import { urlFor } from '@/sanity/image';
+import { sanityClient } from "sanity:client";
+import Details from "@/layouts/Details.astro";
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+const mattress = await sanityClient.fetch(
+  `*[_type == "mattress" && slug.current == $slug][0] {
+    ...,
+    futon { ..., asset-> }  // ← Ensures asset URL is available
+  }`,
+  { slug }
+);
+
+if (!mattress) {
+  return Astro.redirect('/404');
+}
+
+const { title, futon, detail, option, price } = mattress;
+
+const productUrl = `${Astro.url.origin}${Astro.url.pathname}`;
+
+const rawSanityUrl = futon ? urlFor(futon).format('webp').sharpen(80).url() : null;
+console.log('Raw Sanity URL:', rawSanityUrl);  // ← Log the URL — check if it's valid
+
+let optimizedImage = null;
+if (rawSanityUrl) {
+  try {
+    optimizedImage = await getImage({
+      src: rawSanityUrl,
+      width: 1600,
+      inferSize: true,
+    });
+    console.log('Optimized image success:', optimizedImage.src);  // ← Should log the proxied URL like /_vercel/image?...
+  } catch (error) {
+    console.error('getImage() failed:', error);  // ← This will show the exact 400/500 reason
+  }
+}
+console.log('Final optimized:', optimizedImage ? 'OK' : 'Failed');
+
+---
+
+
+
+<Details title={title} >
+
+<Back/>
+
+<div class="flex flex-col lg:flex-row md:flex-row w-full pt-24">
+<div class="aside order-2 pb-8 lg:order-1 md:order-1 lg:w-1/3 md:w-1/3 lg:pr-20 md:pr-8  w-full">
+<h1 class="prose prose-xl pb-6 mb-6 text-red-600 uppercase tracking-widest border-b-2 border-slate-100 ">Futon Pacifika</h1>
+<p class="prose prose-lg py-2 text-red-600 uppercase">{title}</p>
+
+{ detail && <p class="prose text-sm py-2 text-red-600">{detail}</p>}
+
+{ option && <Colors/>}
+
+
+{ price && <p class="price prose prose-base py-2 text-red-600 uppercase ">{price}</p>}
+
+
+<div class="cart py-4">
+{ option ?
+<button 
+id="snipcart-button"
+class="snipcart-add-item  cursor-pointer prose prose-sm py-2 px-4 border border-red-600 uppercase bg-red-600 font-medium text-white tracking-widest w-full"
+data-item-id={slug}
+data-item-image={urlFor(futon).url()}
+data-item-name={title}
+data-item-url={productUrl}
+data-item-max-quantity=1
+data-item-price={price}
+data-item-custom1-name="Colour"
+data-item-custom1-value=""
+>
+Add to Cart
+</button>
+:
+<button 
+class="snipcart-add-item  cursor-pointer prose prose-sm py-2 px-4 border border-red-600 uppercase bg-red-600 font-medium text-white tracking-widest w-full"
+data-item-id={slug}
+data-item-image={urlFor(futon).url()}
+data-item-name={title}
+data-item-url={productUrl}
+data-item-max-quantity=1
+data-item-price={price}
+>
+Add to Cart
+</button>
+}
+</div>
+
+</div>
+
+<div class="canvas order-1 pb-8 lg:order-2 md:order-2 lg:w-2/3 md:w-2/3 w-full" >
+<img class='view h-auto object-cover' src={urlFor(futon).format('webp').sharpen(80).url()} alt={title} /> 
+  
+</div>
+
+</div>
+</Details>
+
+

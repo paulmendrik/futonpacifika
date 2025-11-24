@@ -1,0 +1,29 @@
+---
+import { Picture } from "astro:assets";
+import { urlFor } from "@/sanity/image";
+import { sanityClient } from "sanity:client";
+import Main from "@/layouts/Main.astro";
+const bags = await sanityClient.fetch(`*[_type == "bags"]`);
+---
+
+<Main title="Shoulder Bag Kits" header="Shoulder Bag Kits">
+<div class="w-full">
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-8 md:gap-4 gap-6 relative">
+{bags.map((bag:any) => (
+<a href={`/massage/bags/${bag.slug?.current}`} >
+<figure>
+<Picture class="max-w-full overflow-hidden" src={urlFor(bag.futon).format('webp').sharpen(80).url()} inferSize alt={bag.title} />
+<figcaption class="py-4" >
+<div class=" text-base uppercase text-red-600 text-center">
+{bag.title}
+</div>
+<div class="text-sm text-red-700">
+{bag.description}
+</div>
+</figcaption>
+</figure>
+</a>
+))}
+</div>
+</div>
+</Main>

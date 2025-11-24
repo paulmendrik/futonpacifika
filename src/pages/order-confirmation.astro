@@ -1,0 +1,102 @@
+---
+import Base from '@/layouts/Base.astro';
+---
+
+<Base title="Order Confirmation" header="Order Confirmation" >
+<div class="max-w-3xl mx-auto px-4 py-12">
+
+<div class="bg-white rounded-lg shadow-lg p-8">
+<div class="text-center mb-8">
+<div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+<svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+</svg>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 mb-2">Thank you for your order!</h1>
+<p class="text-gray-600">Order Number: <strong class="text-gray-900" id="order-number">Loading...</strong></p>
+<p class="text-gray-600">Total: <strong class="text-gray-900" id="order-total">Loading...</strong></p>
+</div>
+
+<div class="border-t border-gray-200 pt-8">
+<h2 class="text-2xl font-bold text-gray-900 mb-4">Payment Instructions</h2>
+<p class="text-gray-600 mb-6">Please complete your payment within 7 business days using one of these methods:</p>
+
+<div class="space-y-6">
+<div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded">
+<h3 class="text-lg font-semibold text-blue-900 mb-3 flex items-center gap-2">
+<span>🏦</span> Bank Transfer
+</h3>
+<ul class="space-y-2 text-sm text-gray-700">
+<li><strong>Bank:</strong> Co-Operative Bank</li>
+<li><strong>Account Name:</strong> Futon Pacifika</li>
+<li><strong>Account Number:</strong> 69285785</li>
+<li><strong>Sort Code:</strong> 08-92-99</li>
+<li><strong>IBAN:</strong> GB90CPBK 08929969285785</li>
+<li><strong>BIC Code:</strong> CPBKGB22</li>
+<li><strong>Reference:</strong> <span id="bank-reference">Loading...</span></li>
+</ul>
+</div>
+
+<div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded">
+<h3 class="text-lg font-semibold text-blue-900 mb-3 flex items-center gap-2">
+<span>✉️</span> Cheque Payment
+</h3>
+<div class="text-sm text-gray-700 space-y-2">
+<p><strong>Make payable to:</strong> Futon Pacifika</p>
+<p><strong>Mail to:</strong></p>
+<address class="not-italic ml-4">
+Futon Pacifika<br>
+18b Bess Park Road<br>
+Wadebridge, Cornwall PL27 6HB
+</address>
+<p><strong>Include with payment:</strong> <span id="cheque-reference">Loading...</span></p>
+</div>
+</div>
+</div>
+
+<div class="bg-yellow-50 border border-yellow-200 rounded p-4 mt-6 text-center">
+<p class="text-sm text-yellow-800">
+⚠️ Your order will be processed once payment is received and confirmed.
+</p>
+</div>
+</div>
+
+<div class="mt-8 pt-6 border-t border-gray-200 text-center">
+<p class="text-gray-600 text-sm mb-4">
+A confirmation email with these instructions has been sent to your email address.
+</p>
+<a href="/" class="inline-block bg-blue-600 text-white px-6 py-3 rounded font-medium hover:bg-blue-700 transition">
+Continue Shopping
+</a>
+</div>
+</div>
+</div>
+
+<script>
+  // Get URL parameters using client-side JavaScript
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderIdRaw = urlParams.get('orderId') || 'N/A';
+  const total = urlParams.get('total') || '0.00';
+  
+  console.log('URL Params:', { orderIdRaw, total });
+  
+  // Format order ID to Snip-XXX format
+  // Get the invoice number from Snipcart dashboard or generate a sequential number
+  // For now, we'll use the last 6 characters of the UUID
+  let orderIdDisplay = orderIdRaw;
+  
+  if (orderIdRaw !== 'N/A' && orderIdRaw !== 'pending') {
+    // Extract last 6 chars of UUID and convert to a number-like format
+    const shortId = orderIdRaw.slice(-6).toUpperCase();
+    orderIdDisplay = `Snip-${shortId}`;
+  }
+  
+  console.log('Formatted Order ID:', orderIdDisplay);
+  
+  // Update the DOM
+  document.getElementById('order-number').textContent = orderIdDisplay;
+  document.getElementById('order-total').textContent = `£${parseFloat(total).toFixed(2)}`;
+  document.getElementById('bank-reference').textContent = `Order ${orderIdDisplay}`;
+  document.getElementById('cheque-reference').textContent = `Order ${orderIdDisplay}`;
+</script>
+</Base>

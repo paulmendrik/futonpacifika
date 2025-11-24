@@ -1,0 +1,28 @@
+---
+import { Picture } from "astro:assets";
+import { urlFor } from "@/sanity/image";
+import { sanityClient } from "sanity:client";
+import Main from "@/layouts/Main.astro";
+const yoga = await sanityClient.fetch(`*[_type == "yoga"]`);
+---
+<Main title="Yoga Futons" header="Yoga Futons">
+<div class="w-full">
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-8 md:gap-4 gap-6 relative">
+{yoga.map((mat:any) => (
+<a href={`/yoga/${mat.slug?.current}`} >
+<figure>
+<Picture class="max-w-full overflow-hidden" src={urlFor(mat.futon).format('webp').sharpen(80).url()} inferSize alt={mat.title} />
+<figcaption class="py-4" >
+<div class=" text-base uppercase text-red-600 text-center">
+{mat.title}
+</div>
+<div class="text-sm text-red-700">
+{mat.description}
+</div>
+</figcaption>
+</figure>
+</a>
+))}
+</div>
+</div>
+</Main>

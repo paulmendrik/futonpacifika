@@ -1,0 +1,41 @@
+---
+import BaseHead from '@/components/BaseHead.astro';
+import CookieConsent from '@/components/CookieConsent.astro';
+import Head from '../components/Head.astro';
+import Footer from '../components/Footer.astro';
+const { title, description, image } = Astro.props
+
+---
+
+<html lang="en" class="h-full motion-safe:scroll-smooth" >
+<head> 
+<BaseHead description={description} ogImage={image} title={title} />
+
+</head>
+<body onscroll="setScroll()" onload="setScreen()"  class="flex flex-col items-center h-screen" >
+<Head color="#27272A" text="text-red-600" />
+<div class="w-full flex-grow px-6 lg:px-32 md:px-16">
+<div class="w-full lg:py-6 py-4 lg:mb-8 mb-6 border-b-2 border-slate-100">
+<div class="prose text-red-600 lg:text-2xl  uppercase tracking-widest">{title}</div>
+</div>
+
+<slot/>
+<CookieConsent/>
+</div>
+<Footer/>
+</body>
+</html>
+
+<script is:inline type="text/javascript">
+
+    function setScreen() {
+        var yScreen = localStorage.getItem("yPos");
+        window.scrollTo(0, yScreen);
+    }
+    function setScroll() {
+        var yScroll = window.scrollY;
+        localStorage.setItem("yPos", yScroll);
+    }
+
+
+</script>

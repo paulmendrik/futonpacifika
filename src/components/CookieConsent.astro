@@ -1,0 +1,14 @@
+---
+import 'vanilla-cookieconsent/dist/cookieconsent.css';
+import '../styles/light-funky.css';
+---
+<div id="cc-container">
+
+<script>
+import { run } from "vanilla-cookieconsent";
+import { config } from "@/utils/cookie.consent.config";
+
+run(config)
+document.documentElement.classList.add('cc--light-funky');
+</script>
+</div>

@@ -1,0 +1,227 @@
+---
+
+import { urlFor } from '@/sanity/image';
+import { sanityClient } from "sanity:client";
+
+
+const colors = await sanityClient.fetch(`*[_type == "colors"]`);
+
+---
+
+
+
+<div class="product-with-color">
+  <div class="custom-select-wrapper">
+    <label class="text-red-600" for="color-select">Choose a color:</label>
+    
+    <div class="custom-select">
+      <div class="select-trigger" id="select-trigger">
+        <span class="select-text text-red-600">-- Select a color --</span>
+        <span class="arrow">▼</span>
+      </div>
+      
+      <div class="select-options" id="select-options">
+        {colors.map((color: any) => (
+          <div 
+            class="select-option" 
+            data-value={color._id}
+            data-title={color.name}
+          >
+            {color.swatch && (
+              <img 
+                src={urlFor(color.swatch).width(40).height(40).url()} 
+                alt={color.name}
+                class="option-image"
+              />
+            )}
+            <span>{color.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<style>
+  .custom-select-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .custom-select {
+    position: relative;
+    width: 100%;
+  }
+
+  .select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .select-trigger:hover {
+    border-color: #888;
+  }
+
+  .arrow {
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+
+  .custom-select.open .arrow {
+    transform: rotate(180deg);
+  }
+
+  .select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-select.open .select-options {
+    display: block;
+  }
+
+  .select-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .select-option:hover {
+    background: #f5f5f5;
+  }
+
+  .select-option.selected {
+    background: #e3f2fd;
+  }
+
+  .option-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+
+  .snipcart-add-item {
+    padding: 12px 24px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .snipcart-add-item:hover {
+    background: #0056b3;
+  }
+
+  .snipcart-add-item:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+</style>
+
+<script>
+  const selectWrapper = document.querySelector('.custom-select');
+  const trigger = document.getElementById('select-trigger');
+  const optionsContainer = document.getElementById('select-options');
+  const options = document.querySelectorAll('.select-option');
+  const selectText = document.querySelector('.select-text');
+  const snipcartButton = document.getElementById('snipcart-button');
+
+  let colorSelected = false;
+
+  if (snipcartButton) {
+    snipcartButton.setAttribute('data-item-custom1-required', 'true');
+  }
+
+  // Toggle dropdown
+  trigger?.addEventListener('click', () => {
+    selectWrapper?.classList.toggle('open');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!selectWrapper?.contains(e.target as Node)) {
+      selectWrapper?.classList.remove('open');
+    }
+  });
+
+  // Handle option selection
+  options.forEach((option) => {
+    option.addEventListener('click', () => {
+      const title = option.getAttribute('data-title');
+      
+      // Update trigger text
+      if (selectText && title) {
+        selectText.textContent = title;
+      }
+      
+      // Update Snipcart button with selected color
+      if (snipcartButton && title) {
+        snipcartButton.setAttribute('data-item-custom1-value', title);
+        snipcartButton.removeAttribute('disabled');
+        colorSelected = true;
+      }
+      
+      // Update selected state
+      options.forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+      
+      // Close dropdown
+      selectWrapper?.classList.remove('open');
+    });
+  });
+
+  // Add click handler to show message if no color selected
+  if (snipcartButton) {
+    snipcartButton.addEventListener('click', (e) => {
+      if (!colorSelected) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Show alert message
+        alert('Please select a color before adding to cart');
+        
+        // Optional: Highlight the color selector
+        if (selectWrapper) {
+          selectWrapper.classList.add('highlight-error');
+          setTimeout(() => {
+            selectWrapper?.classList.remove('highlight-error');
+          }, 2000);
+        }
+      }
+    });
+  }
+</script>

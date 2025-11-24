@@ -1,0 +1,21 @@
+---
+
+import BaseHead from '@/components/BaseHead.astro';
+import Head from '../components/Head.astro';
+const { title, description, image } = Astro.props
+
+---
+
+<!doctype html>
+<html lang="en" class="h-full motion-safe:scroll-smooth" >
+<head> 
+<BaseHead description={description} ogImage={image} title={title} />
+
+</head>
+<body  class="flex flex-col items-center h-screen" >
+<Head color="#ffffff" text="text-zinc-50" border="border-none" />
+<div class="w-full flex-grow">
+<slot/>
+</div>
+</body>
+</html>

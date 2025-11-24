@@ -1,0 +1,55 @@
+---
+
+import { PortableText } from 'astro-portabletext';
+import { sanityClient } from "sanity:client";
+import Category from "@/components/Category.astro";
+import Home from '@/layouts/Home.astro';
+
+const about = await sanityClient.fetch(`*[_type == "about"]`)
+
+const home = await sanityClient.fetch(`*[_type == "home"]{
+"products": products[] {
+    title,
+    image,
+    page
+  }
+}[0]`);
+
+
+---
+
+<Home title="Futon Pacifika" header="About">
+
+<div class="w-full lg:py-6 py-4 lg:mb-8 mb-6 border-b-2 border-slate-100">
+<div class="prose font-karma text-red-600 lg:text-2xl  uppercase tracking-widest">About</div>
+</div>
+
+<div class="home relative lg:flex lg:justify-between w-full">
+ 
+
+{about.map((a: any) => (
+
+
+<div class="prose prose-lg  prose-slate w-full max-w-none">
+<PortableText  value={a.content} />
+</div>
+
+
+))}
+
+</div> 
+
+<div class="w-full lg:py-6 py-4 lg:mb-8 mb-6 border-b-2 border-slate-100">
+<div class="prose text-red-600 lg:text-2xl  uppercase tracking-widest">Products</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 lg:gap-8 md:gap-4 gap-6 relative">
+
+{home.products.map((product: any) => (
+
+<Category page={product.page} image={product.image} title={product.title} />
+
+))}
+
+</div>
+
+</Home>

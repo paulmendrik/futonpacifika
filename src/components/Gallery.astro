@@ -1,0 +1,93 @@
+---
+import { Picture } from 'astro:assets';
+import { urlFor } from '../sanity/image';
+import { sanityClient } from "sanity:client";
+const one = await sanityClient.fetch(`*[_type == "paintings"] | order(order)`);
+const two = await sanityClient.fetch(`*[_type == "paintings-2"] | order(order)`);
+const three = await sanityClient.fetch(`*[_type == "paintings-3"] | order(order)`);
+const canvas = await sanityClient.fetch(`*[_type == "canvas"] | order(order)`);
+const giclee = await sanityClient.fetch(`*[_type == "giclee"] | order(order)`);
+const page = Astro.props.page;
+
+---
+
+
+<div class='gallery w-full'>
+
+
+{ page === "paintings" ? 
+
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-16 md:gap-8 gap-6 relative" >
+
+{one.map((image:any) => (
+<a class='painting' href={`paintings/${image.slug?.current}`} id={image.order} >
+<figure>
+<Picture class='h-auto max-w-full' src={urlFor(image.painting).auto("format").maxWidth(500).format('webp').sharpen(80).url()} inferSize alt={image.title} /> 
+<figcaption class=' py-4 text-sm uppercase text-zinc-500 tracking-widest text-center' >{image.title}</figcaption> 
+</figure>
+</a> 
+))}
+
+
+{two.map((image:any) => (
+<a class='painting' href={`paintings/${image.slug?.current}`} id={image.order} >
+<figure>
+<Picture class='h-auto max-w-full' src={urlFor(image.painting).auto("format").maxWidth(500).format('webp').sharpen(80).url()} inferSize alt={image.title} /> 
+<figcaption class=' py-4 text-base uppercase text-slate-500 tracking-widest text-center' >{image.title}</figcaption> 
+</figure>
+</a> 
+))}
+
+{three.map((image:any) => (
+<a class='painting' href={`paintings/${image.slug?.current}`} id={image.order} >
+<figure>
+<Picture class='h-auto max-w-full' src={urlFor(image.painting).auto("format").maxWidth(500).format('webp').sharpen(80).url()} inferSize alt={image.title} /> 
+<figcaption class=' py-4 text-base uppercase text-slate-500 tracking-widest text-center' >{image.title}</figcaption> 
+</figure>
+</a> 
+))}
+
+</div>
+
+: null
+}
+
+{ page === "canvas" ? 
+
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-16 md:gap-8 gap-6 relative" >
+
+{canvas.map((image:any) => (
+<a class='painting' href={`canvas/${image.slug?.current}`} id={image.order} >
+<figure>
+<Picture class='h-auto max-w-full' src={urlFor(image.painting).auto("format").maxWidth(500).format('webp').sharpen(80).url()} inferSize alt={image.title} /> 
+<figcaption class=' py-4 text-base uppercase text-slate-500 tracking-widest text-center' >{image.title}</figcaption> 
+</figure>
+</a> 
+))}
+
+</div>
+
+: null
+}
+
+{ page === "giclee" ? 
+
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-16 md:gap-8 gap-6 relative" >
+    
+{giclee.map((image:any) => (
+<a class='painting' href={`giclee/${image.slug?.current}`} id={image.order} >
+<figure>
+<Picture class='h-auto max-w-full' src={urlFor(image.painting).auto("format").maxWidth(500).format('webp').sharpen(80).url()} inferSize alt={image.title} /> 
+<figcaption class=' py-4 text-base uppercase text-slate-500 tracking-widest text-center' >{image.title}</figcaption> 
+</figure>
+</a> 
+))}
+
+</div>
+
+: null
+}
+
+</div>
+
+<script  src="../utils/trigger.js" />

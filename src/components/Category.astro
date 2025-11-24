@@ -1,0 +1,17 @@
+---
+import { Picture } from "astro:assets";
+import { urlFor } from '@/sanity/image';
+import { sanityClient } from "sanity:client";
+
+const { title, image, page } = Astro.props;
+---
+
+
+<a href={`/${page}/`} class="image-card">
+<figure>
+<Picture class="w-sm h-sm" src={urlFor(image).url()}  inferSize alt={title} />
+<figcaption class="py-4 text-red-600  text-center" > 
+<h3>{title}</h3>
+</figcaption>
+</figure>
+</a>

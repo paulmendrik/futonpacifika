@@ -1,0 +1,94 @@
+---
+import { Picture } from 'astro:assets';
+import Back from '@/components/Back.astro';
+import { urlFor } from '@/sanity/image';
+import { sanityClient } from "sanity:client";
+import Details from "@/layouts/Details.astro";
+import Colors from "@/components/Colors.astro"
+
+export async function getStaticPaths() {
+const extensions = await sanityClient.fetch(`*[_type == "extensions"]`);
+
+  return extensions.map((extension:any ) => {
+    return {
+      params: { slug: extension.slug?.current },
+      props: { ...extension },
+    };
+  });
+}
+
+const { slug  } = Astro.params;
+const { title } = Astro.props;
+const { futon } = Astro.props;
+const { price, option, detail} = Astro.props;
+const colors = await sanityClient.fetch(`*[_type == "colors"]`);
+
+const productUrl = `${Astro.url.origin}${Astro.url.pathname}`;
+
+---
+
+<Details title={title} >
+
+<Back/>
+
+
+<div class="flex flex-col lg:flex-row md:flex-row w-full pt-24">
+<div class="aside order-2 pb-8 lg:order-1 md:order-1 lg:w-2/4 md:w-2/4 lg:pr-20 md:pr-8  w-full">
+<h1 class="prose prose-xl pb-6 mb-6 text-red-600 uppercase tracking-widest border-b-2 border-slate-100 ">Futon Pacifika</h1>
+<p class="prose prose-lg py-2 text-red-500 uppercase">{title}</p>
+
+{ detail ? 
+<p class="prose text-sm py-2 text-red-800">{detail}</p>
+: null
+}
+
+{ option ?
+<Colors/>
+: null
+}
+
+{ price ? 
+<p class="price prose prose-base py-2 text-red-500 uppercase ">{price}</p>
+: null
+}
+
+<div class="cart py-4">
+{ option ?
+<button 
+id="snipcart-button"
+class="snipcart-add-item  cursor-pointer prose prose-sm py-2 px-4 border border-red-600 uppercase bg-red-600 font-medium text-white tracking-widest w-full"
+data-item-id={slug}
+data-item-image={urlFor(futon).url()}
+data-item-name={title}
+data-item-url={productUrl}
+data-item-max-quantity=1
+data-item-price={price}
+data-item-custom1-name="Colour"
+data-item-custom1-value=""
+>
+Add to Cart
+</button>
+:
+<button 
+class="snipcart-add-item  cursor-pointer prose prose-sm py-2 px-4 border border-red-600 uppercase bg-red-600 font-medium text-white tracking-widest w-full"
+data-item-id={slug}
+data-item-image={urlFor(futon).url()}
+data-item-name={title}
+data-item-url={productUrl}
+data-item-max-quantity=1
+data-item-price={price}
+>
+Add to Cart
+</button>
+}
+</div>
+
+</div>
+
+<div class="canvas order-1 pb-8 lg:order-2 md:order-2 lg:w-2/4 md:w-2/4 w-full" >
+<Picture class='view h-auto object-cover' src={urlFor(futon).format('webp').sharpen(80).url()} inferSize alt={title} /> 
+</div>
+
+</div>
+</Details>
+
