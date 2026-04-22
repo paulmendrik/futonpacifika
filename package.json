@@ -19,7 +19,6 @@
   "devDependencies": {
     "@astrojs/netlify": "^7.0.7",
     "@astrojs/partytown": "^2.1.4",
-    "@astrojs/sitemap": "^3.6.0",
     "@astrojs/ts-plugin": "^1.10.5",
     "@iconify-json/mdi": "^1.2.3",
     "@iconify/tailwind": "^1.2.0",

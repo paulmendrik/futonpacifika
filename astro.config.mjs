@@ -1,6 +1,5 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import sitemap from '@astrojs/sitemap';
 import robotsTxt from "astro-robots-txt";
 import partytown from '@astrojs/partytown';
 import tailwindcss from "@tailwindcss/vite";
@@ -22,7 +21,6 @@ export default defineConfig({
     apiVersion: '2024-10-09',
     useCdn: false
     }),
-    sitemap(),
     robotsTxt(),
     partytown({ config: {forward: ['dataLayer.push']}}),
     icon({include: {uit:["*"],}}),
