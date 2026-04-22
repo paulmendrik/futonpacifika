@@ -1,29 +1,25 @@
 ---
 import { Picture } from 'astro:assets';
 import Back from '@/components/Back.astro';
+import Colors from "@/components/Colors.astro"
 import { urlFor } from '@/sanity/image';
 import { sanityClient } from "sanity:client";
 import Details from "@/layouts/Details.astro";
-import Colors from "@/components/Colors.astro"
 
-export async function getStaticPaths() {
-const doubles = await sanityClient.fetch(`*[_type == "doubles"]`);
+const { slug } = Astro.params;
 
-  return doubles.map((double:any ) => {
-    return {
-      params: { slug: double.slug?.current },
-      props: { ...double },
-    };
-  });
+const doubles = await sanityClient.fetch(`*[_type == "doubles" && slug.current == $slug][0]`,{ slug });
+
+if (!doubles) {
+  return Astro.redirect('/404');
 }
 
-const { slug  } = Astro.params;
-const { title } = Astro.props;
-const { futon } = Astro.props;
-const { price, option, detail} = Astro.props;
-const colors = await sanityClient.fetch(`*[_type == "colors"]`);
-
+const { title, futon, detail, option, price, weight } = doubles;
 const productUrl = `${Astro.url.origin}${Astro.url.pathname}`;
+
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set( "Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", `doubles-${slug}, doubles-list`);
 
 ---
 
@@ -65,6 +61,7 @@ data-item-max-quantity=1
 data-item-price={price}
 data-item-custom1-name="Colour"
 data-item-custom1-value=""
+data-item-weight={weight}
 >
 Add to Cart
 </button>
@@ -77,6 +74,7 @@ data-item-name={title}
 data-item-url={productUrl}
 data-item-max-quantity=1
 data-item-price={price}
+data-item-weight={weight}
 >
 Add to Cart
 </button>

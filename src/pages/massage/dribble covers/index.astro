@@ -4,6 +4,10 @@ import { urlFor } from "@/sanity/image";
 import { sanityClient } from "sanity:client";
 import Main from "@/layouts/Main.astro";
 const dribble = await sanityClient.fetch(`*[_type == "dribble"] | order(order)`);
+
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set("Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", "dribble-list");
 ---
 
 <Main title="Dribble Covers" header="Dribble Covers">

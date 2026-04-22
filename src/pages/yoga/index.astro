@@ -4,6 +4,11 @@ import { urlFor } from "@/sanity/image";
 import { sanityClient } from "sanity:client";
 import Main from "@/layouts/Main.astro";
 const yoga = await sanityClient.fetch(`*[_type == "yoga"]`);
+
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set("Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", "yoga-list");
+
 ---
 <Main title="Yoga Futons" header="Yoga Futons">
 <div class="w-full">

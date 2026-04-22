@@ -1,12 +1,17 @@
 ---
-import Base from '@/layouts/Base.astro';
+import Main from '@/layouts/Main.astro';
 import { PortableText } from 'astro-portabletext';
 import { sanityClient } from "sanity:client";
 const privacy = await sanityClient.fetch(`*[_type == "privacy"]`)
 
+
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set("Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", "page-privacy");
+
 ---
 
-<Base title="Privacy Policy" header="Privacy Policy" >
+<Main title="Privacy Policy" header="Privacy Policy" >
 
 
 <div class="privacy py-8  w-full">
@@ -21,4 +26,4 @@ const privacy = await sanityClient.fetch(`*[_type == "privacy"]`)
 </div> 
 
 
-</Base>
+</Main>

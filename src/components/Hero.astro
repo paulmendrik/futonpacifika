@@ -1,20 +1,19 @@
 ---
+import { Picture } from "astro:assets";
 import { sanityClient } from "sanity:client";
-import { urlFor } from '../sanity/image';
-const home = await sanityClient.fetch(`*[_type == "home"]{ "url": video.asset->url}`)
+import { urlFor } from "../sanity/image";
+const home = await sanityClient.fetch(`*[_type == "home"]`);
 ---
 
 <div class="w-full mb-12">
-
-{home.map( (h: any) => (
-
-<video class="w-full" autoplay loop>
-<source src={h.url} type="video/mp4" />
-Your browser does not support the video tag.
-</video>
-
-))}
-
-
-
+  {
+    home.map((h: any) => (
+      <Picture
+        class="object-cover"
+        src={urlFor(h.banner).url()}
+        inferSize
+        alt={h.title}
+      />
+    ))
+  }
 </div>

@@ -1,15 +1,20 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Main from '@/layouts/Main.astro';
 import { PortableText } from 'astro-portabletext';
 import { urlFor } from '../sanity/image';
 import { sanityClient } from "sanity:client";
 const contact = await sanityClient.fetch(`*[_type == "contact"]`)
 
+
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set("Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", "page-contact");
+
 ---
 
-<Base title="Contact" header="Contact" >
 
-
+<Main title="Contact" header="Contact">
 <div class="contact relative lg:flex md:flex lg:justify-between md:justify-between  w-full">
 {contact.map((c: any) => (
 
@@ -25,5 +30,4 @@ const contact = await sanityClient.fetch(`*[_type == "contact"]`)
 ))}
 </div> 
 
-
-</Base>
+</Main>>

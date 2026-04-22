@@ -1,28 +1,33 @@
 ---
-import { Image } from 'astro:assets';
-import swirlLogo from '../images/swirllogo.png';
-import { Navigation } from './Menu';
+import { Image } from "astro:assets";
+import Logo from "../images/logo.png";
+import { Navigation } from "./Menu";
 ---
-<header class:list={["flex", "flex-row", "relative", "top-0", "w-full",  "bg-transparent", "start-0", "py-6", "border-b-2", "border-slate-100", "lg:px-32", "md:px-16","px-6", "z-20"]}> 
-<div class=" lg:basis-3/4 md:basis-3/4 basis-11/12"> 
-<a href="/">
-<Image src={swirlLogo} alt="Futon Pacifika Logo" />
-</a>
-</div>
-<div class=" lg:basis-1/4 md:basis-1/4 basis-1/12">
-<Navigation client:visible />
-</div>
+
+<header
+  class:list={[
+    "flex",
+    "flex-row",
+    "relative",
+    "top-0",
+    "w-full",
+    "bg-transparent",
+    "start-0",
+    "py-6",
+    "border-b-2",
+    "border-slate-100",
+    "lg:px-32",
+    "md:px-16",
+    "px-6",
+    "z-20",
+  ]}
+>
+  <div class="lg:basis-3/4 md:basis-3/4 basis-11/12">
+    <a href="/">
+      <Image src={Logo} alt="Futon Pacifika Logo" />
+    </a>
+  </div>
+  <div class="lg:basis-1/4 md:basis-1/4 basis-1/12">
+    <Navigation client:visible />
+  </div>
 </header>
-
-
-
-
-
-
-
-
-
-
-
-
-

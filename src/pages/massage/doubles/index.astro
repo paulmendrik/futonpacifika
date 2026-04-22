@@ -3,26 +3,38 @@ import { Picture } from "astro:assets";
 import { urlFor } from "@/sanity/image";
 import { sanityClient } from "sanity:client";
 import Main from "@/layouts/Main.astro";
-const doubles = await sanityClient.fetch(`*[_type == "doubles"]`);
+const doubles = await sanityClient.fetch(`*[_type == "doubles"] | order(order)`);
+
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set("Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", "doubles-list");
 ---
+
 <Main title="Double Futon Mat" header="Double Futon Mat">
-<div class="w-full">
-<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-8 md:gap-4 gap-6 relative">
-{doubles.map((double:any) => (
-<a href={`/massage/doubles/${double.slug?.current}`} >
-<figure>
-<Picture class="max-w-full overflow-hidden" src={urlFor(double.futon).format('webp').sharpen(80).url()} inferSize alt={double.title} />
-<figcaption class="py-4" >
-<div class=" text-base uppercase text-red-600 text-center">
-{double.title}
-</div>
-<div class="text-sm text-red-700">
-{double.description}
-</div>
-</figcaption>
-</figure>
-</a>
-))}
-</div>
-</div>
+  <div class="w-full">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-8 md:gap-4 gap-6 relative"
+    >
+      {
+        doubles.map((double: any) => (
+          <a href={`/massage/doubles/${double.slug?.current}`}>
+            <figure>
+              <Picture
+                class="max-w-full overflow-hidden"
+                src={urlFor(double.futon).format("webp").sharpen(80).url()}
+                inferSize
+                alt={double.title}
+              />
+              <figcaption class="py-4">
+                <div class=" text-base uppercase text-red-600 text-center">
+                  {double.title}
+                </div>
+                <div class="text-sm text-red-700">{double.description}</div>
+              </figcaption>
+            </figure>
+          </a>
+        ))
+      }
+    </div>
+  </div>
 </Main>

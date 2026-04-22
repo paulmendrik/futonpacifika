@@ -4,29 +4,31 @@
   data-api-key={import.meta.env.PUBLIC_SNIPCART_API_KEY}
   data-config-modal-style="side"
   hidden
-></div>
+>
+</div>
 
 <!-- Snipcart JS -->
 <script is:inline>
   window.SnipcartSettings = {
-    publicApiKey: 'MWQ1MzA3ODgtN2YwOC00NmYzLWE1MDAtNDMwZTgyZDkxMTRmNjM4OTg4MTQzOTIyNTc2OTQx',
-    loadStrategy: 'on-user-interaction',
-    version: '3.0',
+    publicApiKey:
+      "MWQ1MzA3ODgtN2YwOC00NmYzLWE1MDAtNDMwZTgyZDkxMTRmNjM4OTg4MTQzOTIyNTc2OTQx",
+    loadStrategy: "on-user-interaction",
+    version: "3.0",
     timeoutDuration: 2750,
-    domain: 'cdn.snipcart.com',
-    protocol: 'https',
+    domain: "cdn.snipcart.com",
+    protocol: "https",
   };
 
-  (function() {
-    var m = ['focus', 'mouseover', 'touchmove', 'scroll', 'keydown'];
+  (function () {
+    var m = ["focus", "mouseover", "touchmove", "scroll", "keydown"];
     window.LoadSnipcart = loadSnipcart;
-    document.readyState === 'loading'
-      ? document.addEventListener('DOMContentLoaded', init)
+    document.readyState === "loading"
+      ? document.addEventListener("DOMContentLoaded", init)
       : init();
 
     function init() {
-      if (window.SnipcartSettings.loadStrategy === 'on-user-interaction') {
-        m.forEach(function(t) {
+      if (window.SnipcartSettings.loadStrategy === "on-user-interaction") {
+        m.forEach(function (t) {
           document.addEventListener(t, loadSnipcart);
         });
         setTimeout(loadSnipcart, window.SnipcartSettings.timeoutDuration);
@@ -36,51 +38,61 @@
     }
 
     var snipcartLoaded = false;
+
     function loadSnipcart() {
       if (snipcartLoaded) return;
       snipcartLoaded = true;
 
-      var head = document.getElementsByTagName('head')[0];
-      var snipcartDiv = document.querySelector('#snipcart');
-      var scriptExists = document.querySelector(`script[src^="${window.SnipcartSettings.protocol}://${window.SnipcartSettings.domain}"][src$="snipcart.js"]`);
-      var cssExists = document.querySelector(`link[href^="${window.SnipcartSettings.protocol}://${window.SnipcartSettings.domain}"][href$="snipcart.css"]`);
+      var head = document.getElementsByTagName("head")[0];
+      var snipcartDiv = document.querySelector("#snipcart");
+      var scriptExists = document.querySelector(
+        `script[src^="${window.SnipcartSettings.protocol}://${window.SnipcartSettings.domain}"][src$="snipcart.js"]`
+      );
+      var cssExists = document.querySelector(
+        `link[href^="${window.SnipcartSettings.protocol}://${window.SnipcartSettings.domain}"][href$="snipcart.css"]`
+      );
 
       if (!snipcartDiv) {
-        snipcartDiv = document.createElement('div');
-        snipcartDiv.id = 'snipcart';
-        snipcartDiv.setAttribute('hidden', 'true');
+        snipcartDiv = document.createElement("div");
+        snipcartDiv.id = "snipcart";
+        snipcartDiv.setAttribute("hidden", "true");
         document.body.appendChild(snipcartDiv);
       }
       configureSnipcartDiv(snipcartDiv);
 
       if (!scriptExists) {
-        var script = document.createElement('script');
+        var script = document.createElement("script");
         script.src = `${window.SnipcartSettings.protocol}://${window.SnipcartSettings.domain}/themes/v${window.SnipcartSettings.version}/default/snipcart.js`;
         script.async = true;
         head.appendChild(script);
       }
 
       if (!cssExists) {
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
         link.href = `${window.SnipcartSettings.protocol}://${window.SnipcartSettings.domain}/themes/v${window.SnipcartSettings.version}/default/snipcart.css`;
         head.prepend(link);
       }
 
-      m.forEach(function(g) {
+      m.forEach(function (g) {
         document.removeEventListener(g, loadSnipcart);
       });
     }
 
     function configureSnipcartDiv(div) {
-      var isV3Ci = window.SnipcartSettings.version.includes('v3.0.0-ci');
-      var isLessThan34 = window.SnipcartSettings.version !== '3.0' &&
-                         window.SnipcartSettings.version.localeCompare('3.4.0', void 0, { numeric: true, sensitivity: 'base' }) === -1;
+      var isV3Ci = window.SnipcartSettings.version.includes("v3.0.0-ci");
+      var isLessThan34 =
+        window.SnipcartSettings.version !== "3.0" &&
+        window.SnipcartSettings.version.localeCompare("3.4.0", void 0, {
+          numeric: true,
+          sensitivity: "base",
+        }) === -1;
       if (isV3Ci || isLessThan34) {
         div.dataset.apiKey = window.SnipcartSettings.publicApiKey;
         if (window.SnipcartSettings.addProductBehavior) {
-          div.dataset.configAddProductBehavior = window.SnipcartSettings.addProductBehavior;
+          div.dataset.configAddProductBehavior =
+            window.SnipcartSettings.addProductBehavior;
         }
         if (window.SnipcartSettings.modalStyle) {
           div.dataset.configModalStyle = window.SnipcartSettings.modalStyle;
@@ -96,257 +108,37 @@
   })();
 </script>
 
-<!-- Custom Snipcart logic -->
+<!-- Custom order confirmation redirect using Snipcart's recommended approach -->
 <script is:inline>
-  function initSnipcartCustomLogic() {
-    // Check if Snipcart is available
-    if (typeof Snipcart === 'undefined' || !Snipcart.store) {
-      console.log('Snipcart not yet available, retrying...');
-      setTimeout(initSnipcartCustomLogic, 100);
-      return;
+  (function () {
+    function initOrderRedirect() {
+      if (typeof Snipcart === "undefined" || !Snipcart.events) {
+        setTimeout(initOrderRedirect, 100);
+        return;
+      }
+
+      // Listen for cart.confirmed event (fires when order is completed)
+      Snipcart.events.on("cart.confirmed", function (cart) {
+        // Store the complete cart object in localStorage
+        localStorage.setItem("snipcartLastOrder", JSON.stringify(cart));
+
+        // Redirect to custom order confirmation page
+        window.location.href = "/order-confirmation";
+      });
     }
 
-    console.log('Snipcart is available, setting up events');
-
-    let noticeAdded = false;
-    let hasRedirected = false;
-    let redirectTimeout = null;
-    
-    // LOG ALL SNIPCART EVENTS AND SAVE TO SESSIONSTORAGE
-    var possibleEvents = [
-      'item.adding',
-      'item.added',
-      'item.removing',
-      'item.removed',
-      'cart.opened',
-      'cart.closed',
-      'cart.confirmed',
-      'checkout.complete',
-      'order.completed',
-      'page.validating',
-      'page.validated',
-      'theme.routechanged',
-      'payment.success'
-    ];
-    
-    possibleEvents.forEach(function(eventName) {
-      Snipcart.events.on(eventName, function(data) {
-        console.log('🔔 EVENT FIRED:', eventName);
-        
-        // Capture cart state whenever any event fires
-        var state = Snipcart.store.getState();
-        
-        // Log the entire state to see what's available
-        console.log('Full state:', state);
-        
-        if (state.cart) {
-          console.log('Cart invoiceNumber:', state.cart.invoiceNumber);
-          console.log('Cart number:', state.cart.number);
-          console.log('Cart token:', state.cart.token);
-        }
-        
-        if (state.order) {
-          console.log('Order invoiceNumber:', state.order.invoiceNumber);
-          console.log('Order number:', state.order.number);
-          console.log('Order token:', state.order.token);
-        }
-        
-        if (state.cart && (state.cart.token || state.cart.total > 0 || state.cart.subtotal > 0)) {
-          var cartData = {
-            token: state.cart.token,
-            invoiceNumber: state.cart.invoiceNumber || state.cart.number,
-            total: state.cart.total,
-            subtotal: state.cart.subtotal,
-            items: state.cart.items
-          };
-          
-          // Also check if there's an order object with invoice number
-          if (state.order && state.order.invoiceNumber) {
-            cartData.invoiceNumber = state.order.invoiceNumber;
-          }
-          
-          console.log('💾 Saving cart state from event ' + eventName + ':', cartData);
-          
-          // Save to sessionStorage
-          try {
-            sessionStorage.setItem('futon_order_data', JSON.stringify(cartData));
-          } catch (e) {
-            console.error('❌ Failed to save to sessionStorage:', e);
-          }
-        }
-      });
-    });
-    
-    // Use MutationObserver to watch for cart DOM changes (for payment notice)
-    var observer = new MutationObserver(function(mutations) {
-      // Check if snipcart modal/cart is visible
-      var snipcartLayout = document.querySelector('.snipcart-layout');
-      var snipcartModal = document.querySelector('.snipcart-modal');
-      
-      var isVisible = (snipcartLayout && snipcartLayout.offsetParent !== null) || 
-                      (snipcartModal && snipcartModal.offsetParent !== null);
-      
-      if (isVisible && !noticeAdded) {
-        console.log('🛒 Snipcart cart is visible in DOM');
-        
-        setTimeout(function() {
-          var existingNotice = document.querySelector('.payment-notice-injected');
-          
-          if (existingNotice) {
-            return;
-          }
-          
-          // Look for the layout content container
-          var layoutContent = document.querySelector('.snipcart-layout__content');
-          var checkoutContent = document.querySelector('.snipcart-checkout__content');
-          
-          // Create notice with improved styling
-          var notice = document.createElement('div');
-          notice.className = 'payment-notice-injected';
-          notice.style.cssText = `
-            display: block;
-            width: 100%;
-            padding: 20px;
-            margin-bottom: 24px;
-            background-color: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-left: 4px solid #2563eb;
-            border-radius: 8px;
-            box-sizing: border-box;
-          `;
-          
-          notice.innerHTML = `
-            <div style="display: flex; align-items: flex-start; gap: 12px;">
-              <svg style="flex-shrink: 0; margin-top: 2px;" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z" fill="#2563eb"/>
-              </svg>
-              <div style="flex: 1;">
-                <strong style="display: block; color: #1e40af; margin-bottom: 6px; font-size: 15px; font-weight: 600; line-height: 1.4;">
-                  Payment Methods Available
-                </strong>
-                <p style="margin: 0; font-size: 14px; color: #1e3a8a; line-height: 1.6;">
-                  We accept payment by <strong>Bank Transfer</strong> or <strong>Cheque</strong>. Complete payment instructions will be provided on your order confirmation page.
-                </p>
-              </div>
-            </div>
-          `;
-          
-          // Try insertion in the main content area
-          var insertTarget = layoutContent || checkoutContent;
-          
-          if (insertTarget) {
-            insertTarget.insertBefore(notice, insertTarget.firstChild);
-            noticeAdded = true;
-            console.log('✅ Notice inserted at top of layout content');
-          }
-        }, 500);
-      }
-      
-      if (!isVisible && noticeAdded) {
-        noticeAdded = false;
-      }
-      
-      // Look for thank you text - BUT ONLY REDIRECT ONCE
-      if (!hasRedirected && !redirectTimeout) {
-        var snipcartContent = document.querySelector('.snipcart-layout');
-        
-        if (snipcartContent) {
-          var snipcartText = snipcartContent.innerText.toLowerCase();
-          
-          // Check for phrases that only appear on confirmation page
-          var hasThankYou = snipcartText.includes('thank you') || 
-                           snipcartText.includes('order confirmed') ||
-                           snipcartText.includes('your order has been') ||
-                           snipcartText.includes('order complete');
-          
-          // Check for actual billing/payment FORMS
-          var hasBillingForm = document.querySelector('.snipcart-billing') !== null;
-          var hasPaymentForm = document.querySelector('.snipcart-payment') !== null;
-          var hasPlaceOrderButton = document.querySelector('button.snipcart__actions--link') !== null;
-          
-          var isCheckoutPage = hasBillingForm || hasPaymentForm || hasPlaceOrderButton;
-          
-          if (hasThankYou && !isCheckoutPage) {
-            console.log('🎉 Confirmation page detected - initiating SINGLE redirect');
-            
-            // Mark as redirecting immediately to prevent duplicate triggers
-            hasRedirected = true;
-            
-            // Try to retrieve from sessionStorage
-            var savedData = null;
-            try {
-              var stored = sessionStorage.getItem('futon_order_data');
-              if (stored) {
-                savedData = JSON.parse(stored);
-                console.log('📦 Retrieved from sessionStorage:', savedData);
-              }
-            } catch (e) {
-              console.error('❌ Failed to retrieve from sessionStorage:', e);
-            }
-            
-            // Try to get invoice number from the DOM text
-            var invoiceMatch = snipcartText.match(/snip-(\d+)/i);
-            var invoiceFromDOM = invoiceMatch ? invoiceMatch[0].toUpperCase() : null;
-            console.log('Invoice from DOM:', invoiceFromDOM);
-            
-            var orderId = 'pending';
-            var total = 0;
-            
-            if (savedData) {
-              // Prefer invoice number over token
-              orderId = invoiceFromDOM || savedData.invoiceNumber || savedData.token;
-              total = savedData.total || savedData.subtotal || 0;
-              
-              // Calculate from items if needed
-              if (total === 0 && savedData.items && savedData.items.length > 0) {
-                total = savedData.items.reduce(function(sum, item) {
-                  return sum + ((item.price || 0) * (item.quantity || 0));
-                }, 0);
-              }
-              
-              console.log('Using order ID:', orderId, 'Total:', total);
-            }
-            
-            var baseUrl = window.location.origin;
-            var redirectUrl = baseUrl + '/order-confirmation?orderId=' + orderId + '&total=' + total;
-            
-            console.log('🚀 REDIRECTING TO:', redirectUrl);
-            
-            // Set timeout and store reference to prevent duplicate redirects
-            redirectTimeout = setTimeout(function() {
-              // Clear sessionStorage
-              try {
-                sessionStorage.removeItem('futon_order_data');
-              } catch (e) {}
-              
-              Snipcart.api.theme.cart.close();
-              window.location.href = redirectUrl;
-            }, 1500);
-          }
-        }
-      }
-    });
-    
-    // Start observing
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class', 'style']
-    });
-    
-    console.log('✅ MutationObserver set up');
-    console.log('✅ All Snipcart event listeners set up');
-  }
-
-  // Start when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      document.addEventListener('snipcart.ready', initSnipcartCustomLogic);
-      setTimeout(initSnipcartCustomLogic, 1000);
-    });
-  } else {
-    document.addEventListener('snipcart.ready', initSnipcartCustomLogic);
-    setTimeout(initSnipcartCustomLogic, 1000);
-  }
+    // Initialize when page loads
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initOrderRedirect);
+    } else {
+      initOrderRedirect();
+    }
+  })();
 </script>
+
+<!-- Hide Snipcart's default thank you screen to avoid flash -->
+<style>
+  .snipcart-checkout__content--success {
+    display: none !important;
+  }
+</style>

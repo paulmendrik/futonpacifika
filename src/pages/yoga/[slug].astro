@@ -6,26 +6,20 @@ import { urlFor } from '@/sanity/image';
 import { sanityClient } from "sanity:client";
 import Details from "@/layouts/Details.astro";
 
+const { slug } = Astro.params;
 
-export async function getStaticPaths() {
-const yoga = await sanityClient.fetch(`*[_type == "yoga"]`);
+const yoga = await sanityClient.fetch(`*[_type == "yoga" && slug.current == $slug][0]`,{ slug });
 
-  return yoga.map((mat:any ) => {
-    return {
-      params: { slug: mat.slug?.current },
-      props: { ...mat },
-    };
-  });
+if (!yoga) {
+  return Astro.redirect('/404');
 }
 
-const { slug  } = Astro.params;
-const { title } = Astro.props;
-const { futon } = Astro.props;
-const { detail, option, price } = Astro.props;
+const { title, futon, detail, option, price, weight } = yoga;
+const productUrl = `${Astro.url.origin}${Astro.url.pathname}`;
 
-const colors = await sanityClient.fetch(`*[_type == "colors"]`);
-
-const productUrl = new URL(`/yoga/${slug}`, Astro.site).href;
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set( "Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", `yoga-${slug}, yoga-list`);
 
 ---
 
@@ -69,6 +63,7 @@ data-item-max-quantity=1
 data-item-price={price}
 data-item-custom1-name="Colour"
 data-item-custom1-value=""
+data-item-weight={weight}
 >
 Add to Cart
 </button>
@@ -81,6 +76,7 @@ data-item-name={title}
 data-item-url={productUrl}
 data-item-max-quantity=1
 data-item-price={price}
+data-item-weight={weight}
 >
 Add to Cart
 </button>

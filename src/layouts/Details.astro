@@ -1,20 +1,36 @@
 ---
-import BaseHead from '@/components/BaseHead.astro';
-import SnipCart from '@/components/SnipCart.astro';
-const { title, description, image } = Astro.props
+import BaseHead from "@/components/BaseHead.astro";
+import SnipCart from "@/components/SnipCart.astro";
+import { PortableText } from "astro-portabletext";
+import { sanityClient } from "sanity:client";
+
+const payment = await sanityClient.fetch(`*[_type == "payment"]`);
+
+const { title, description, image } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="h-full motion-safe:scroll-smooth" >
-<head>
-<BaseHead description={description} ogImage={image} title={title} />
-</head>
-<body  class="flex flex-col items-center h-screen">
-<div class="content w-full px-6 lg:px-32 md:px-16 flex-grow">
+<html lang="en" class="h-full motion-safe:scroll-smooth">
+  <head>
+    <BaseHead description={description} ogImage={image} title={title} />
+  </head>
+  <body class="flex flex-col items-center h-screen">
+    <div class="content w-full px-6 lg:px-32 md:px-16 flex-grow">
+      <slot />
+    </div>
+    {
+      payment.map((p: any) => (
+        <div class="content w-full px-6 lg:px-32 md:px-16 flex-grow">
+          <p class="prose text-lg text-heading py-2 pb-2 text-red-600 uppercase">
+            {p.title}
+          </p>
+          <div class="text-sm text-red-500">
+            <PortableText value={p.options} />
+          </div>
+        </div>
+      ))
+    }
 
-<slot />
-</div>
-<SnipCart/>
-</body>
+    <SnipCart />
+  </body>
 </html>
-

@@ -3,30 +3,38 @@ import { Picture } from "astro:assets";
 import { urlFor } from "@/sanity/image";
 import { sanityClient } from "sanity:client";
 import Main from "@/layouts/Main.astro";
-const singles = await sanityClient.fetch(`*[_type == "singles"]`);
+const singles = await sanityClient.fetch(`*[_type == "singles"] | order(order)`);
 
+Astro.response.headers.set("Cache-Control","public, max-age=0, must-revalidate",);
+Astro.response.headers.set("Netlify-CDN-Cache-Control","public, durable, s-maxage=86400, stale-while-revalidate=604800",);
+Astro.response.headers.set("Netlify-Cache-Tag", "singles-list");
 ---
 
 <Main title="Single Futon Mats" header="Single Futon Mats">
-<div class="gallery w-full">
-<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-8 md:gap-4 gap-6 relative">
-{singles.map((futon:any) => (
-<a href={`/massage/singles/${futon.slug?.current}`} >
-<figure>
-<Picture class=" max-w-full overflow-hidden" src={urlFor(futon.futon).format('webp').sharpen(80).url()} inferSize alt={futon.title} />
-<figcaption class="py-4" >
-<div class=" text-base uppercase text-red-600 text-center">
-{futon.title}
-</div>
-<div class="text-sm text-red-700">
-{futon.description}
-</div>
-
-
-    </figcaption>
-</figure>
-</a>
-))}
-</div>
-</div>
+  <div class="gallery w-full">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 lg:gap-8 md:gap-4 gap-6 relative"
+    >
+      {
+        singles.map((futon: any) => (
+          <a href={`/massage/singles/${futon.slug?.current}`}>
+            <figure>
+              <Picture
+                class=" max-w-full overflow-hidden"
+                src={urlFor(futon.futon).format("webp").sharpen(80).url()}
+                inferSize
+                alt={futon.title}
+              />
+              <figcaption class="py-4">
+                <div class=" text-base uppercase text-red-600 text-center">
+                  {futon.title}
+                </div>
+                <div class="text-sm text-red-700">{futon.description}</div>
+              </figcaption>
+            </figure>
+          </a>
+        ))
+      }
+    </div>
+  </div>
 </Main>
