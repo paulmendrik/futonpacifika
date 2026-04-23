@@ -33,7 +33,7 @@ if (_type === "mattress") {
 if (slug?.current) {
 tagsToPurge.push(`home-${slug.current}`);
 }
-tagsToPurge.push("home-list", "paintings-pagination");
+tagsToPurge.push("home-list");
 
 } else if (_type === "bags") {
 if (slug?.current) {
