@@ -11,6 +11,7 @@ const home = await sanityClient.fetch(`*[_type == "home"]{
 "products": products[] {
     title,
     image,
+    description,
     page
   }
 }[0]`);
@@ -48,7 +49,7 @@ Astro.response.headers.set("Netlify-Cache-Tag", "page-index");
 
 {home.products.map((product: any) => (
 
-<Category page={product.page} image={product.image} title={product.title} />
+<Category page={product.page} image={product.image} title={product.title} description={product.description} />
 
 ))}
 

@@ -8,6 +8,7 @@ const massage = await sanityClient.fetch(`*[_type == "massage"]{
 "categories": categories[] {
     title,
     image,
+    description,
     page
   }
 }[0]`);
@@ -24,7 +25,7 @@ Astro.response.headers.set("Netlify-Cache-Tag", "page-massage");
 
 {massage.categories.map((category: any) => (
 
-<Category page={category.page} image={category.image} title={category.title} />
+<Category page={category.page} image={category.image} title={category.title} description={category.description} />
 
 ))}
 </div>
